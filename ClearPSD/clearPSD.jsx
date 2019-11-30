@@ -171,13 +171,12 @@ function _UI_progress_ (_config) {
 }
 
 function _update_UI_progress(_config,_message,_percent){
-	if (_config && _config.ui && _config.ui.progress_ui) {
 		if (!_config.ui.progress_ui.palette_ui.active) {
 			_config.ui.progress_ui.palette_ui.active = true;
 		}
 		_config.ui.progress_ui.message_ui.text = _message;
 		_config.ui.progress_ui.bar_ui.value = _percent * _config.ui.progress_ui.bar_ui.maxvalue;
-	}
+		_config.ui.progress_ui.palette_ui.show();
 }
 
 function process (_config) {
@@ -202,7 +201,7 @@ function process (_config) {
 		XMPUtils.removeProperties(xmpRef,"","",XMPConst.REMOVE_ALL_PROPERITES);
 		exportDocRef.xmpMetadata.rawData = xmpRef.serialize();
 
-
+		_update_UI_progress(_config,PROCESS_MSG[1],0);
 		parse(exportDocRef.layers,_config);
 
 		app.preferences.rulerUnits = originRulerUnits;
@@ -211,7 +210,6 @@ function process (_config) {
 
 		// end
 		if (_config.ui.progress_ui) {
-			_update_UI_progress(_config,PROCESS_MSG[2],1);
 			_config.ui.progress_ui.palette_ui.close();
 		}
 		if (_config.ui.main_ui) {
@@ -233,9 +231,10 @@ function parse (_layers,_config) {
 			_update_UI_progress(_config,PROCESS_MSG[1],i/_layers.length);
 			gatherLayers(_layers[i],targets);
 		}
-		
+		_update_UI_progress(_config,PROCESS_MSG[2],0);
 		var nameGenerate = generateNameManager(targets.length);
 		rename(_layers,_config,nameGenerate);
+		_update_UI_progress(_config,PROCESS_MSG[2],1);
 	}
 }
 
